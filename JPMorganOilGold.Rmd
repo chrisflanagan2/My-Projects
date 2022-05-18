@@ -1,0 +1,322 @@
+---
+title: "MA541 Project"
+author: "Chris Flanagan"
+date: '2022-04-22'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Part 1: Meet the data
+```{r}
+library("readxl")
+df <- read_excel("/Users/Suraj/Desktop/School/Stevens/Sem 2/541/Group Project/MA 541 Course Project Data.xlsx")
+head(df)
+colMeans(df)
+apply(df,2, FUN = sd)
+cor(df)
+```
+
+
+# Part 2: Describe your data
+### 1. Histogram for each column
+```{r}
+ETF <- df$Close_ETF
+OIL <- df$oil
+GOLD <- df$gold
+JPM <- df$JPM
+
+hist(ETF)
+hist(OIL)
+hist(GOLD)
+hist(JPM)
+```
+
+### 2. Time series plot for each column
+```{r}
+Time <- seq(1,1000)
+plot(Time, ETF)
+plot(Time, OIL)
+plot(Time, GOLD)
+plot(Time, JPM)
+```
+
+### 3. Time series plot for all four columns
+```{r}
+plot(Time, ETF, ylim = c(-1,160))
+lines(Time, OIL)
+lines(Time, GOLD)
+lines(Time, JPM)
+```
+
+### 4. Three scatter plots to describe the relationships between the ETF column and the OIL column; between the ETF column and the GOLD column; between the ETF column and the JPM column, respectively
+```{r}
+plot(ETF, OIL)
+plot(ETF, GOLD)
+plot(ETF, JPM)
+```
+
+The obtained scatterplots for part 2.4 do not show any linear relationship between the ETF column and the other 3 columns. The relationship that they do show is that no matter what the ETF value is, the 3 columns are still scattered around 0.
+
+# Part 3: What distribution does your data follow
+```{r}
+qqnorm(ETF, pch = 1, frame = FALSE)
+qqline(ETF, col = "steelblue", lwd = 2)
+
+qqnorm(OIL, pch = 1, frame = FALSE)
+qqline(OIL, col = "steelblue", lwd = 2)
+
+qqnorm(GOLD, pch = 1, frame = FALSE)
+qqline(GOLD, col = "steelblue", lwd = 2)
+
+qqnorm(JPM, pch = 1, frame = FALSE)
+qqline(JPM, col = "steelblue", lwd = 2)
+```
+
+The obtained Q-Q plots fall along a straight line indicating that each of the 4 variables are from normal distributions. This is in support of the initial assumption from the histograms which appeared to be normally distributed.
+
+# Part 4: Break your data into small groups and let them discuss the importance of the Central Limit Theorem
+### 1. Calculate the mean ux and the standard deviation sx of the population
+```{r}
+mu <- mean(ETF)
+sd <- sd(ETF)
+```
+
+### 2. Break the population into 50 groups sequentially and each group includes 20 values
+```{r}
+means <- c()
+sds <- c()
+for(i in seq(1,1000,20)){
+  index <- seq(i, 19+i)
+  mean <- mean(ETF[index])
+  means <- c(means, mean)
+  samp_sd <- sd(ETF[index])
+  sds <- c(sds,samp_sd)
+}
+```
+
+### 3. Calculate the sample mean x of each group. Draw a histogram of all the sample means. Comment on the distribution of these sample means, i.e., use the histogram to assess the normality of the data consisting of these sample means
+```{r}
+hist(means)
+```
+
+### 4. Calculate the mean ux and the standard deviation sx of the data including these sample means. Make a comparison between ux and ux, between sx/n and sx. Here, n isthe number of sample means calculated from Item 3) above
+```{r}
+u_xbar <- mean(means)
+u_xbar
+mu
+sd/sqrt(50)
+mean(sds)
+```
+
+### 5. Are the results from Items 3) and 4) consistent with the Central Limit Theorem? Why?
+
+The obtained results from parts 3 and 4 are consistent with the CLT. These samples show consistent results with the population, in terms of the mean, variance, and distribution. This is seen through the histogram
+
+### 6. Break the population into 10 groups sequentially and each group includes 100 values
+```{r}
+means <- c()
+sds <- c()
+for(i in seq(1,1000,100)){
+  index <- seq(i, 99+i)
+  mean <- mean(ETF[index])
+  means <- c(means, mean)
+  samp_sd <- sd(ETF[index])
+  sds <- c(sds,samp_sd)
+}
+```
+
+### 7. Repeat Items 3) ~ 5).
+```{r}
+hist(means)
+u_xbar <- mean(means)
+u_xbar
+mu
+sd/sqrt(50)
+mean(sds)
+```
+
+### 8. Generate 50 simple random samples or groups (with replacement) from the population. The size of each sample is 20, i.e., each group includes 20 values
+```{r}
+means <- c()
+sds <- c()
+for(i in seq(50)){
+  samp <- sample(ETF, 20, replace = TRUE)
+  mean <- mean(samp)
+  means <- c(means, mean)
+  samp_sd <- sd(samp)
+  sds <- c(sds,samp_sd)
+}
+sample2 <- samp
+```
+
+### 9. Repeat Items 3) ~ 5)
+```{r}
+hist(means)
+u_xbar <- mean(means)
+u_xbar
+mu
+sd/sqrt(50)
+mean(sds)
+```
+
+### 10. Generate 10 simple random samples or groups (with replacement) from the population. The size of each sample is 100, i.e., each group includes 100 values
+```{r}
+means <- c()
+sds <- c()
+for(i in seq(10)){
+  samp <- sample(ETF, 100, replace = TRUE)
+  mean <- mean(samp)
+  means <- c(means, mean)
+  samp_sd <- sd(samp)
+  sds <- c(sds,samp_sd)
+}
+sample1 <- samp
+```
+
+### 11. Repeat Items 3) ~ 5)
+```{r}
+hist(means)
+u_xbar <- mean(means)
+u_xbar
+mu
+sd/sqrt(50)
+mean(sds)
+```
+
+### 12. In Part 3 of the project, you have figured out the distribution of the population (the entire ETF column). Does this information have any impact on the distribution of the sample mean(s)? Explain your answer.
+
+The sample means will be normally distributed because samples were all taken from a normally distributed population. The output is what would have been expected.
+
+# Part 5: Construct a confidence interval with your data
+### 1. Pick up one of the 10 simple random samples you generated in Step 10) of Part 4, construct an appropriate 95% confidence interval of the mean u
+```{r}
+library(BSDA)
+test1 <- t.test(sample1,conf.level = 0.95)
+test1$conf.int
+```
+
+### 2. Pick up one of the 50 simple random samples you generated in Step 8) of Part 4, construct an appropriate 95% confidence interval of the mean u.
+```{r}
+test2 <- z.test(sample2, sigma.x = sd, conf.level = 0.95)
+test2$conf.int
+```
+
+### In Part 1, you have calculated the mean u of the population (the entire ETF column) using Excel function. Do the two intervals from 1) and 2) above include (the true value of) the mean u? Which one is more accurate? Why?
+
+Both confidence intervals include the mean mu. The first sample size for the sample is larger therefore, we can conclude that it will be more accurate. 
+As the sample size increases, the standard deviation decreases. This is shown in the confidence interval since it is a smaller range of values centered around the population mean mu, while the second sample of smaller sample size has a larger range despite the same confidence level of 95%.
+
+# Part 6: Form a hypothesis and test it with your data 
+### 1. Use the same sample you picked up in Step 1) of Part 5 to test H0: u=100 vs. Ha: u != 100 at the significance level 0.05. What’s your conclusion?
+```{r}
+mean(sample1) 
+t.test(sample1, mu = 100, alternative = "two.sided")
+```
+
+### 2. Use the same sample you picked up in Step 2) of Part 5 to test H0: u=100 vs. Ha: u != 100 at the significance level 0.05. What’s your conclusion?
+```{r}
+mean(sample2)
+t.test(sample2, mu = 100, alternative = "two.sided")
+```
+
+### 3. Use the same sample you picked up in Step 2) of Part 5 to test H0: s = 15 vs. Ha: s != 15 at the significance level 0.05. What’s your conclusion?
+```{r}
+library(EnvStats)
+sd(sample2)
+varTest(sample2, alternative="two.sided", sigma.squared = 225)
+```
+
+### 4. Use the same sample you picked up in Step 2) of Part 5 to test H0: s = 15 vs. Ha: s < 15 at the significance level 0.05. What’s your conclusion?
+```{r}
+varTest(sample2, alternative="less", sigma.squared = 225)
+```
+
+# Part 7: Compare your data with a different data set
+### 1. Consider the entire Gold column as a random sample from the first population, and the entire Oil column as a random sample from the second population. Assuming these two samples be drawn independently, form a hypothesis and test it to see if the Gold and Oil have equal means in the significance level 0.05.
+```{r}
+t.test(OIL, GOLD)
+```
+
+### 2. Subtract the entire Gold column from the entire Oil column and generate a sample of differences. Consider this sample as a random sample from the target population of differences between Gold and Oil. Form a hypothesis and test it to see if the Gold and Oil have equal means in the significance level 0.05.
+```{r}
+diff <- OIL-GOLD
+t.test(diff, mu=0)
+```
+
+### 3. Consider the entire Gold column as a random sample from the first population, and the entire Oil column as a random sample from the second population. Assuming these two samples be drawn independently, form a hypothesis and test it to see if the Gold and Oil have equal standard deviations in the significance level 0.05.
+```{r}
+var.test(GOLD, OIL)
+```
+
+# Part 8: Fitting the line to the data
+### 1. Draw a scatter plot of ETF (Y) vs. Gold (X). Is there any linear relationship between them which can be observed from the scatter plot?
+```{r}
+plot(GOLD,ETF)
+```
+
+### 2. Calculate the coefficient of correlation between ETF and Gold and interpret it
+```{r}
+cor(GOLD,ETF)
+```
+
+### 3. Fit a regression line (or least squares line, best fitting line) to the scatter plot. What are the intercept and slope of this line? How to interpret them?
+```{r}
+plot(GOLD,ETF)
+abline(lm(ETF~GOLD), col='red')
+coef(lm(ETF~GOLD))
+```
+
+### 4. Conduct a two-tailed t-test with H0: B1 = 0. What is the P-value of the test? Is the linear relationship between ETF (Y) and Gold (X) significant at the significance level 0.01? Why or why not?
+```{r}
+summary(lm(ETF~GOLD))
+```
+
+### 5. Suppose that you use the coefficient of determination to assess the quality of this fitting. Is it a good model? Why or why not? 
+```{r}
+summary(lm(ETF~GOLD))
+```
+
+From the calculated output, the R2 value is 0.0005288. Since this is a low R2 value, it indicates our model is not a good fit.
+
+### 6. What are the assumptions you made for this model fitting?
+
+There were 4 main assumptions made: 
+-	ETF and Gold have a linear relationship. 
+-	Both ETF and Gold are normally distributed
+-	There is little to no autocorrelation in the data, 
+-	The data is homoscedastic. 
+
+### 7. Given the daily relative change in the gold price is 0.005127. Calculate the 99% confidence interval of the mean daily ETF return, and the 99% prediction interval of the individual daily ETF return
+```{r}
+x <- 0.005127
+df_gold <-data.frame(GOLD=x)
+
+predict(lm(ETF~GOLD), df_gold,level=0.99,interval='confidence')
+predict(lm(ETF~GOLD), df_gold,level=0.99,interval='predict')
+```
+
+# Part 9: Does your model predict?
+### Consider the data including the ETF, Gold and Oil column. Using any software, fit a multiple linear regression model to the data with the ETF variable as the response. Evaluate your model with adjusted R2.
+```{r}
+mod <- lm(Close_ETF ~ gold + oil, data=df)
+summary(mod)
+```
+The Adjusted R-squared value is -0.001254 indicating the model is a poor fit. 
+Gold and Oil are not good explanatory variables for the ETF variable. 
+
+# Part 10: Checking residuals and model selection
+### Calculate the residuals of the model fitting you did in Part 9. Check the four assumptions made for the error terms of the multiple regression model using these residuals (mean 0; constant variance; normality; and the independence). You may draw some plots over the residuals to check these assumptions. For example, draw a Normal Probability Plot to check the normality assumption; draw a scatter plot of Residuals vs. Fitted Values to check the constant variance assumption and the independence assumption; and so on. You may refer to the following link https://www.youtube.com/watch?v=4zQkJw73U6I for some hints. In your project report, all the relevant plots and at least one paragraph of summary of checking the four assumptions using those plots must be included. Discuss how you may improve the quality of your regression model according to the strategy of model selection.
+```{r}
+residuals <- summary(mod)$resid
+library(olsrr)
+ols_plot_resid_fit(mod)
+qqnorm(residuals, pch = 1, frame = FALSE)
+qqline(residuals, col = "steelblue", lwd = 2)
+```
+
+### Discuss how you may improve the quality of your regression model according to the strategy of model selection.
+
+The subset selection and stepwise approaches could be used to improve the quality of the model. This however would likely not have a large impact since there are a small number of independent variables. 
